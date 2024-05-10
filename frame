@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(120deg, white, #e6e6fa); /* Lighter purple */
+        }
+        .container {
+            width: 90%;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .content {
+            padding: 20px;
+            text-align: left;
+        }
+        .videos {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .video {
+            height: 200px;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>"Revolutionizing Sales with AI"</h1>
+            <p>Experience the future of sales with our outbound and inbound AI sales agents.</p>
+            <button>Explore</button>
+        </div>
+        <div class="videos">
+            <div class="video" id="outboundAnimation">Outbound AI Agent Conversation Animation</div>
+            <input type="file" id="outboundFile" accept="audio/*">
+            <div class="video" id="inboundAnimation">Inbound AI Agent Conversation Animation</div>
+            <input type="file" id="inboundFile" accept="audio/*">
+        </div>
+    </div>
+
+    <script>
+        function setup() {
+            let outboundCanvas = createCanvas(240, 200).parent('outboundAnimation');
+            let outboundAnalyzer = new p5.Amplitude();
+            setupAudio('outboundFile', outboundAnalyzer, outboundCanvas);
+
+            let inboundCanvas = createCanvas(240, 200).parent('inboundAnimation');
+            let inboundAnalyzer = new p5.Amplitude();
+            setupAudio('inboundFile', inboundAnalyzer, inboundCanvas);
+        }
+
+        function draw() {
+            // This function will draw visualizations but is kept empty for simplicity now
+        }
+
+        function setupAudio(fileInputId, analyzer, canvas) {
+            const fileInput = document.getElementById(fileInputId);
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    let audio = new p5.SoundFile(this.files[0], () => {
+                        audio.loop();
+                    });
+                    analyzer.setInput(audio);
+                    drawVisualization(analyzer, canvas);
+                }
+            });
+        }
+
+        function drawVisualization(analyzer, canvas) {
+            canvas.draw = function() {
+                let volume = analyzer.getLevel();
+                this.background(50);
+                this.fill(255, 0, 0);
+                let h = this.map(volume, 0, 1, 0, this.height);
+                this.rect(this.width / 2 - 50, this.height - h, 100, h);
+            }
+        }
+    </script>
+</body>
+</html>
